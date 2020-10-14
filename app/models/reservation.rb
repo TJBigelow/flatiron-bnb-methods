@@ -15,22 +15,22 @@ class Reservation < ActiveRecord::Base
 
   def not_host
     if self.guest == self.listing.host
-      errors.add(:guest_id, "You can't book your own listing.")
+      errors.add(:guest, "cannot book own listing.")
     end
   end
 
   def is_available
     if self.checkin.present? && self.checkout.present? && !self.listing.is_available?(self.checkin, self.checkout)
-      errors.add(:listing, "That listing is already booked for at least one of those days.")
+      errors.add(:listing, "already booked for at least one of those days.")
     end
   end
 
   def checkin_before_checkout
     if self.checkin.present? && self.checkout.present?
       if self.checkin > self.checkout
-        errors.add(:checkin, "Checkin must be prior to checkout.")
+        errors.add(:checkin, "must be prior to checkout.")
       elsif self.checkin == self.checkout
-        errors.add(:checkin, "You must book at least one full day.")
+        errors.add(:checkin, "must be on a different day than checkout")
       end
     end
   end
