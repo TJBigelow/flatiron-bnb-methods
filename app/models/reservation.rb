@@ -19,16 +19,9 @@ class Reservation < ActiveRecord::Base
     end
   end
 
-  def overlap?(date)
-    unavailable = self.listing.reservations.map {|r| {checkin: r.checkin, checkout: r.checkout}}
-    unavailable.any?{|range| range[:checkin] <= date && range[:checkout] >= date}
-  end
-
   def is_available
-    if self.checkin.present? && self.overlap?(self.checkin)
-      errors.add(:checkin, "That checkin date is already booked.")
-    elsif self.checkout.present? && self.overlap?(self.checkout)
-      errors.add(:checkout, "That checkout date is already booked.")
+    if !self.listing.is_available?(self.checkin, self.checkout)
+      errors.add(:listing, "That listing is already booked.")
     end
   end
 
