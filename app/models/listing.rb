@@ -12,6 +12,18 @@ class Listing < ActiveRecord::Base
     self.reviews.sum {|review| review.rating}.to_f / self.reviews.length.to_f
   end
 
+  def is_available?(first_day,last_day)
+    reservation_ranges = self.reservations.map do |reservation| 
+      {
+        checkin: reservation.checkin,
+        checkout: reservation.checkout
+      }
+    end
+    reservation_ranges.all? do |range|
+      ((range[:checkin]..range[:checkout]).to_a & (first_day..last_day).to_a).empty?
+    end
+  end
+
   private
 
   def make_host
@@ -25,6 +37,4 @@ class Listing < ActiveRecord::Base
     host.host = false if host.listings.length == 0
     host.save
   end
-
-
 end

@@ -6,16 +6,7 @@ class Neighborhood < ActiveRecord::Base
     first_day = strip_date(first_day)
     last_day = strip_date(last_day)
     self.listings.select do |listing|
-      reservation_ranges = listing.reservations.map do |reservation| 
-        {
-          checkin: reservation.checkin,
-          checkout: reservation.checkout
-        }
-      end
-      reservation_ranges.none? do |range| 
-        (range[:checkin] <= last_day && range[:checkout] >= first_day) ||
-        (first_day <= range[:checkout] && last_day >= range[:checkin])
-      end
+      listing.is_available?(first_day, last_day)
     end
   end
 
@@ -34,6 +25,6 @@ class Neighborhood < ActiveRecord::Base
   private
 
   def strip_date(string)
-    DateTime.strptime(string, '%Y-%m-%d')
+    Date.strptime(string, '%Y-%m-%d')
   end
 end
