@@ -20,8 +20,8 @@ class Reservation < ActiveRecord::Base
   end
 
   def is_available
-    if !self.listing.is_available?(self.checkin, self.checkout)
-      errors.add(:listing, "That listing is already booked.")
+    if self.checkin.present? && self.checkout.present? && !self.listing.is_available?(self.checkin, self.checkout)
+      errors.add(:listing, "That listing is already booked for at least one of those days.")
     end
   end
 
